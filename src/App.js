@@ -60,7 +60,7 @@ export const optionsInterchanges = {
 };
 
 function App() {
-  const [n, setN] = useState(0);
+  const [n, setN] = useState();
   const [isSorting, setIsSorting] = useState(false);
   const [notification, setNotification] = useState({
     type: "",
@@ -78,6 +78,9 @@ function App() {
   const [randomArray, setRandomArray] = useState(sortInitialState);
   const [shellSortState, setShellSortState] = useState(sortInitialState);
   const [bubbleSortState, setBubbleSortState] = useState(sortInitialState);
+  const [showBubbleResult, setShowBubbleResult] = useState(false);
+  const [showShellResult, setShowShellResult] = useState(false);
+  const [showOriginResult, setShowOriginResult] = useState(false);
   // const [quickSortState, setQuickSortState] = useState(sortInitialState);
 
   // Data Sets.
@@ -92,6 +95,20 @@ function App() {
     comparisons: [],
     interchanges: [],
   });
+
+  const handleToggleOrigin = () => {
+    setShowOriginResult(!showOriginResult);
+  };
+  const handleToggleBubbleResult = () => {
+    console.log({ showBubbleResult });
+    setShowBubbleResult(!showBubbleResult);
+    console.log({ showBubbleResult });
+  };
+  const handleToggleShellResult = () => {
+    console.log({ showBubbleResult });
+    setShowShellResult(!showShellResult);
+    console.log({ showBubbleResult });
+  };
 
   const dataTimesExecution = {
     labels,
@@ -160,7 +177,7 @@ function App() {
         message: "",
         show: false,
       });
-    }, 1000);
+    }, 2000);
   };
 
   const handleTextChange = ({ target }) => {
@@ -183,7 +200,7 @@ function App() {
   };
   const handleCreateNewArray = () => {
     // Check N Length
-    if (n <= 0) {
+    if (!n) {
       addNotification({
         type: "danger",
         message: "Please Write the Length to Create Random Array",
@@ -204,11 +221,12 @@ function App() {
     bubbleSort(randomArray);
     shellSort(randomArray);
     setIsSorting(false);
+    setN();
   };
   const bubbleSort = (arr) => {
     addNotification({
       type: "success",
-      message: "Bubble Sort is Running",
+      message: "Sorting...",
     });
     let interchanges = 0;
     let numberComparisons = 0;
@@ -249,10 +267,10 @@ function App() {
   };
 
   const shellSort = (arr) => {
-    addNotification({
-      type: "success",
-      message: "Shell Sort is Running",
-    });
+    // addNotification({
+    //   type: "success",
+    //   message: "Shell Sort is Running",
+    // });
     let interchanges = 0;
     let numberComparisons = 0;
     let timeInit, timeEnd;
@@ -303,6 +321,7 @@ function App() {
       console.log("Random Array Was changed");
     }
   }, [randomArray]);
+
   return (
     <div className="App">
       <header className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow mb-4">
@@ -316,6 +335,7 @@ function App() {
           <form>
             <div className="mb-3">
               <input
+                placeholder="Please enter the length to create random array"
                 value={n}
                 type="number"
                 className="form-control"
@@ -341,10 +361,6 @@ function App() {
       </header>
       <div className="container">
         <div className="row">
-          <div className="col-12">
-            {/* <h1>Dashboard</h1> */}
-            {n > 0 && <h2>N:{n}</h2>}
-          </div>
           {notification.show && (
             <div className="offset-2 col-8">
               {notification.type === "danger" && (
@@ -359,25 +375,34 @@ function App() {
               )}
             </div>
           )}
-          {/* {randomArray.length > 0 && (
-            <div className="col-12 mb-5">
-              <h3>Array to Sort</h3>
-              <p>
-                <code>{JSON.stringify(randomArray)}</code>
-              </p>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            {n > 0 && <h2>N:{n}</h2>}
+            {randomArray.length > 0 && (
               <button
                 type="button"
-                onClick={handleSort}
-                className="btn btn-success"
+                onClick={handleToggleOrigin}
+                className="btn btn-success my-5"
               >
-                Sort Elements
+                {!showOriginResult
+                  ? "Show Created Array"
+                  : "Hide Created Array"}
               </button>
-            </div>
-          )} */}
+            )}
+            {showOriginResult && (
+              <div className="col-12 mb-5">
+                <h1>Origin Array</h1>
+                <p>
+                  <code>{JSON.stringify(randomArray)}</code>
+                </p>
+              </div>
+            )}
+          </div>
         </div>
         <div className="row">
           <div className="col-4 mb-5">
-            <h1>Bubble Sort</h1>
+            <h1 className="h1 text-danger">Bubble Sort</h1>
             <>
               <ul className="list-group">
                 <li className="list-group-item">
@@ -390,16 +415,28 @@ function App() {
                   Interchanges: {bubbleSortState.numberSwap}
                 </li>
               </ul>
-              {/* {bubbleSortState.sortArray.length > 0 && (
+              {bubbleSortState.sortArray.length > 0 && (
+                <button
+                  // type="button"
+                  className="btn btn-primary my-3"
+                  onClick={handleToggleBubbleResult}
+                >
+                  {!showBubbleResult
+                    ? "Show Sorted Array"
+                    : "hide Sorted Array"}
+                </button>
+              )}
+
+              {bubbleSortState.sortArray.length > 0 && showBubbleResult && (
                 <p>
-                  Sort Array
+                  {!showShellResult ? "Show Sorted Array" : "hide Sorted Array"}
                   <code>{JSON.stringify(bubbleSortState.sortArray)}</code>
                 </p>
-              )} */}
+              )}
             </>
           </div>
           <div className="col-4">
-            <h1>Shell Sort</h1>
+            <h1 className="h1 text-primary">Shell Sort</h1>
             <>
               <ul className="list-group">
                 <li className="list-group-item">
@@ -412,49 +449,44 @@ function App() {
                   Interchanges: {shellSortState.numberSwap}
                 </li>
               </ul>
-              {/* {shellSortState.sortArray.length > 0 && (
+              {shellSortState.sortArray.length > 0 && (
+                <button
+                  type="button"
+                  className="btn btn-primary my-3"
+                  onClick={handleToggleShellResult}
+                >
+                  Show Sorted Array
+                </button>
+              )}
+
+              {shellSortState.sortArray.length > 0 && showShellResult && (
                 <p>
                   Sort Array
                   <code>{JSON.stringify(shellSortState.sortArray)}</code>
                 </p>
-              )} */}
+              )}
             </>
           </div>
         </div>
       </div>
-      <div className="fluid-container">
-        <div className="row">
-          <div className="offset-2 col-8 offset-2 ">
-            <Line options={optionsTimeExecution} data={dataTimesExecution} />
-          </div>
-          <div className="offset-2 col-8 offset-2 ">
-            <Line options={optionsComparisons} data={dataComparisons} />
-          </div>
-          <div className="offset-2 col-8 offset-2 ">
-            <Line options={optionsInterchanges} data={dataInterchanges} />
+      {true && (
+        <div className="fluid-container">
+          <div className="row">
+            <h1 className="h1">Comparative Chart</h1>
+            <div className="offset-2 col-8 offset-2 ">
+              <Line options={optionsTimeExecution} data={dataTimesExecution} />
+            </div>
+            <div className="offset-2 col-8 offset-2 ">
+              <Line options={optionsComparisons} data={dataComparisons} />
+            </div>
+            <div className="offset-2 col-8 offset-2 ">
+              <Line options={optionsInterchanges} data={dataInterchanges} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
 export default App;
-
-// <div className="App container bg-light rounded-3">
-//   <h1>Sort Algoritms</h1>
-//   <div className="">
-//     <div className="alert alert-primary" role="alert">
-//       A simple primary alert—check it out!
-//     </div>
-//   </div>
-//   <p>
-//     In this App, you can compare the performance between Shell Sort and
-//     QuickSort.
-//   </p>
-//   <ul>
-//     <li>Execution Time </li>
-//     <li>Comparisons Number </li>
-//     <li>Swap Number </li>
-//   </ul>
-// </div>

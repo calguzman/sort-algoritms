@@ -11,7 +11,6 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import faker from "faker";
 
 ChartJS.register(
   CategoryScale,
@@ -276,7 +275,7 @@ function App() {
         shellSortArray[j] = temp;
       }
 
-      if (increment == 2) {
+      if (increment === 2) {
         increment = 1;
       } else {
         increment = parseInt((increment * 5) / 11);
